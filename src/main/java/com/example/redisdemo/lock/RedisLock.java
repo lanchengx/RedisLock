@@ -9,7 +9,18 @@ import java.util.concurrent.TimeUnit;
  * @Description:
  */
 public interface RedisLock {
-    Boolean tryLock(String key, Long timeout , TimeUnit timeUtil);
+    /**
+     * 加锁
+     * @param key
+     * @param timeout
+     * @param timeUtil
+     * @return
+     */
+    Boolean tryLock(String key, Long timeout, TimeUnit timeUtil);
 
+    /**
+     * 解锁
+     * @param key
+     */
     void releaseLock(String key);
 }

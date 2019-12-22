@@ -1,4 +1,4 @@
-package com.example.redisdemo;
+package com.example.redisdemo.controller;
 
 import com.example.redisdemo.lock.RedisLock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +23,7 @@ public class ShopCartController {
 
     @RequestMapping("/submitOrder")
     public String submitOrder() {
-        //互斥性
-        Boolean lock = stringRedisTemplate.opsForValue().setIfAbsent(product, "lan",30, TimeUnit.SECONDS);
-        if (!lock) {
-            return "error";
-        }
+        redisLock.tryLock(product,30L,TimeUnit.SECONDS);
         try{
             //redis 中查询商品库存 stock = 50
             int stock = Integer.parseInt(stringRedisTemplate.opsForValue().get("stock"));
@@ -40,7 +36,7 @@ public class ShopCartController {
                 System.out.println("扣减失败，库存不足");
             }
         }finally {
-            stringRedisTemplate.delete(product);
+            redisLock.releaseLock(product);
         }
         return "end";
     }
